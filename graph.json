@@ -1,4 +1,4 @@
-{
+[{
   "name": "Intent to App",
     "children": [
       { 
@@ -23,4 +23,4 @@
               { "name": "Information Intensity" }
             ] }
     ]
-}
+}]

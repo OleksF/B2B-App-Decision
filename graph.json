@@ -1,26 +1,195 @@
 {
   "name": "Intent to App",
+  "measures": [
+    {
+      "var": "IA_1",
+      "question": "Our firm intends to use B2B Mobile Apps in the near future."
+    },
+    {
+      "var": "IA_2",
+      "question": "Our firm intends to make B2B Mobile Apps available to our customers in the near future."
+    },
+    {
+      "var": "IA_3",
+      "question": "Our firm intends to adopt the B2B Mobile Apps in the near future."
+    },
+    {
+      "var": "IA_4",
+      "question": "Our firm plans to use B2B Mobile Apps for various commercial activities in the near future."
+    }
+  ],
   "children": [
       { 
         "name": "Perceived Usefulness",
+        "measures": [
+          {
+            "var": "PU_1",
+            "question": "Using B2B mobile apps improves business performance."
+          },
+          {
+            "var": "PU_2",
+            "question": "Using B2B mobile apps increases business productivity."
+          },
+          {
+            "var": "PU_3",
+            "question": "Using B2B mobile apps enhances effectiveness in business."
+          },
+          {
+            "var": "PU_4",
+            "question": "B2B mobile apps are useful in business."
+          }
+        ],
         "children": [
-          { "name": "Perceived Ease of Use" },
-          { "name": "Technology",
+          {
+            "name": "Perceived Ease of Use",
+            "measures": [
+              {
+                "var": "PEU_1R",
+                "question": "Interacting with B2B mobile apps is unclear and not understandable."
+              },
+              {
+               "var": "PEU_2R",
+                "question": "Interacting with B2B mobile apps requires a lot of mental effort."
+              },
+              {
+                "var": "PEU_3R",
+                "question": "B2B mobile apps are not easy to use."
+              }
+            ]
+          },
+          {
+            "name": "Technology",
             "children" : [
-              { "name": "Relative Advantage" },
-              { "name": "Compatibility" }
-            ] }
+              {
+                "name": "Relative Advantage",
+                "measures": [
+                  {
+                    "var": "RA_1",
+                    "question": "We expect B2B Mobile Apps to increase market share."
+                  },
+                  {
+                    "var": "RA_2",
+                    "question": "We expect B2B Mobile Apps to speed up the purchasing process."
+                  },
+                  {
+                    "var": "RA_3",
+                    "question": "We expect B2B Mobile Apps to help lower our costs."
+                  },
+                  {
+                    "var": "RA_5",
+                    "question": "We expect B2B Mobile Apps to improve customer service."
+                  },
+                  {
+                    "var": "RA_6",
+                    "question": "We expect B2B Mobile Apps to be a major part of our service offering."
+                  }
+                ]
+              },
+              {
+                "name": "Compatibility",
+                "measures": [
+                  {
+                    "var" : "C_1",
+                    "question": "The changes introduced by B2B Mobile Apps are consistent with our firm's beliefs and values."
+                  },  
+                  {
+                    "var" : "C_3",
+                    "question": "B2B Mobile Apps are compatible with our firm's existing information infrastructure."
+                  },  
+                  {
+                    "var" : "C_4",
+                    "question": "The changes introduced by B2B Mobile Apps are consistent with our firm's existing practice."
+                  }
+                ]
+              }
+            ]
+          }
         ]
       },
-      { "name": "Organization",
-            "children" : [
-              { "name": "Top Management Support" },
-              { "name": "Firm Size" }
-            ] },
-      { "name": "Environment",
-            "children" : [
-              { "name": "Competitive Pressure" },
-              { "name": "Information Intensity" }
-            ] }
+      {
+        "name": "Organization",
+        "children" : [
+          {
+            "name": "Top Management Support",
+            "measures": [
+              {
+                "var": "TMS_1",
+                "question": "Our top management is likely to support the use of B2B Mobile Apps."
+              },
+              {
+                "var": "TMS_2",
+                "question": "Our top management is likely to invest funds in B2B Mobile Apps."
+              },
+              {
+                "var": "TMS_3",
+                "question": "Our top management is willing to take the risks associated with the adoption of B2B Mobile Apps."
+              },
+              {
+                "var": "TMS_4",
+                "question": "Our top management is likely to be interested in adopting B2B Mobile Apps."
+              },
+              {
+                "var": "TMS_5",
+                "question": "Our top management considers B2B Mobile Apps to be important to the firm."
+              }
+            ]
+          },
+          {
+            "name": "Firm Size",
+            "measures": [
+              {
+                "var": "FS_1",
+                "question": "The capital investment of our business is higher than our industry peers."
+              },
+              {
+                "var": "FS_2",
+                "question": "The revenue of our business is among the highest in our industry."
+              },
+              {
+                "var": "FS_3",
+                "question": "Our business has more employees than our industry peers."
+              }
+            ]
+          }
+        ] },
+      {
+        "name": "Environment",
+        "children" : [
+              {
+                "name": "Competitive Pressure",
+                "measures": [
+                  {
+                    "var": "CP_1",
+                    "question": "Our firm is experiencing competitive pressure to introduce B2B Mobile apps to buyers."
+                  },
+                  {
+                    "var": "CP_2",
+                    "question": "Our firm will experience competitive disadvantage if B2B Mobile Apps are not adopted."
+                  },
+                  {
+                    "var": "CP_3",
+                    "question": "We believe that we will lose customers to our competitors if we do not adopt B2B Mobile Apps."
+                  },
+                  {
+                    "var": "CP_4",
+                    "question": "We feel that it is a strategic necessity to introduce B2B Mobile Apps in order to compete in the existing marketplace."
+                  }
+                ]
+              },
+              {
+                "name": "Information Intensity",
+                "measures": [
+                  {
+                    "var": "II_1",
+                    "question": "Customers typically need a large amount of information about our products/services before making a purchase."
+                  },
+                  {
+                    "var": "II_4",
+                    "question": "Customers typically need a large amount of information before purchasing products/services in our industry."
+                  }
+                ]
+              }
+        ]
+      }
   ]
 }

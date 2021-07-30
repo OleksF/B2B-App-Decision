@@ -1,10 +1,26 @@
 {
-  "children": [
-    {
-      "children": [
-        {},
-        {}
-      ]
-    }
-  ]
+  "name": "Intent to App",
+    "children": [
+      { 
+        "name": "Perceived Usefulness",
+        "children": [
+          { "name": "Technology",
+            "children" : [
+              { "name": "Relative Advantage" },
+              { "name": "Compatibility" }
+            ] } 
+        ]
+      },
+      { "name": "Perceived Ease of Use" },
+      { "name": "Organization",
+            "children" : [
+              { "name": "Top Management Support" },
+              { "name": "Firm Size" }
+            ] },
+      { "name": "Environment",
+            "children" : [
+              { "name": "Competitive Pressure" },
+              { "name": "Information Intensity" }
+            ] }
+    ]
 }

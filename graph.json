@@ -1,17 +1,17 @@
 [{
   "name": "Intent to App",
-    "children": [
+  "children": [
       { 
         "name": "Perceived Usefulness",
         "children": [
+          { "name": "Perceived Ease of Use" },
           { "name": "Technology",
             "children" : [
               { "name": "Relative Advantage" },
               { "name": "Compatibility" }
-            ] } 
+            ] }
         ]
       },
-      { "name": "Perceived Ease of Use" },
       { "name": "Organization",
             "children" : [
               { "name": "Top Management Support" },
@@ -22,5 +22,5 @@
               { "name": "Competitive Pressure" },
               { "name": "Information Intensity" }
             ] }
-    ]
+  ]
 }]

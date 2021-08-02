@@ -1,0 +1,159 @@
+.cntr {
+    display: block;
+    max-width: 740px;
+    margin-left: 220px; /* Same as the width of the sidebar */
+    padding: 0px 10px;
+}
+
+.graph {
+    display: flex;
+}
+
+.title {
+    font-size: large;
+    font-weight: bolder;
+    font-family: sans-serif;
+    margin: 2em 10px 6em 0;
+    text-align: right;
+}
+
+.title-nav {
+    font-size: large;
+    font-weight: bolder;
+    font-family: sans-serif;
+    margin: 0 10px 0 0;
+    text-align: right;
+}
+
+/* Radio buttons for scene selection 
+   https://stackoverflow.com/questions/4641752/css-how-to-style-a-selected-radio-buttons-label
+*/
+
+.radio-toolbar input[type="radio"] {
+    display: none;
+}
+
+.radio-toolbar label {
+  display: block;
+  padding: 4px 11px;
+  font-family: Arial;
+  font-size: 16px;
+  cursor: pointer;
+  direction: rtl;
+}
+
+.radio-toolbar label:hover {
+    text-decoration: underline;
+  }
+
+.radio-toolbar .highlighted+label {
+    text-decoration: underline;
+}
+
+.radio-toolbar input[type="radio"]:checked+label {
+  background-color: #ddd;
+}
+
+
+/* Scene 1, tree
+   https://bl.ocks.org/mbostock/3184089
+   https://bl.ocks.org/d3noob/8375092 */
+
+.inline-p {
+    display: inline;
+}
+
+.link {
+    fill: none;
+    stroke: lightgray;
+    stroke-width: 2px;
+    padding: 3px;
+}
+
+.selected-link {
+    marker-end: url(#end);
+    fill: none;
+    stroke: slategray;
+    stroke-width: 4px;
+    padding: 3px;
+}
+
+.link-area {
+    fill: none;
+    stroke: greenyellow;
+    stroke-width: 20px;
+    stroke-opacity: 0;
+}
+  
+.border {
+    fill: none;
+    shape-rendering: crispEdges;
+    stroke: #aaa;
+}
+
+.node {
+    cursor: pointer;
+    stroke: #fff;
+}
+
+.node circle {
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 3px;
+}
+
+.node text {
+    stroke: rgb(83, 83, 83);
+}
+
+.emphasized-text {
+    font-weight: bold;
+    font-family: sans-serif;
+}
+
+ /* inline node and link as an affordance */
+
+.node-in circle {
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 2px;
+}
+
+.node-in {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+.link-in path {
+    fill: none;
+    stroke: gray;
+    stroke-width: 4px;
+}
+
+.link-in {
+    width: 51px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+/* Sidebar (based on W3 example) */
+
+ /* The sidebar menu */
+ .sidenav {
+    height: 100%; /* Full-height: remove this if you want "auto" height */
+    width: 220px; /* Set the width of the sidebar */
+    position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+    z-index: 1; /* Stay on top */
+    top: 0; /* Stay at the top */
+    left: 0;
+    /* background-color: #111; Black */
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 10px;
+  }
+  
+  /* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */
+  @media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+  } 

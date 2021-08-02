@@ -1,1 +1,814 @@
-<h1>Hello!</h1>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="css/style.css">
+    <meta charset="utf-8" /> 
+    <script src='https://d3js.org/d3.v5.min.js'></script>
+</head>
+
+<body onload='init()'>
+    <div class="sidenav">
+        <div class="title">
+            <p>B2B App Adoption Survey</p>
+        </div>
+        <div class="title-nav">
+            <p>Navigation</p>
+        </div>
+        <form class="radio-toolbar" autocomplete="off">
+            <input onclick="changeScene(event)" type="radio" id="radio0" name="radios" value="0" checked>
+            <label for="radio0">Conceptual Map</label>
+          
+            <input onclick="changeScene(event)" type="radio" id="radio1" name="radios" value="1">
+            <label for="radio1">Usefulness → App</label>
+          
+            <input onclick="changeScene(event)" type="radio" id="radio2" name="radios" value="2">
+            <label for="radio2">Ease → Usefulness</label>
+        
+            <input onclick="changeScene(event)" type="radio" id="radio3" name="radios" value="3">
+            <label for="radio3">Advantage → Usefulness</label>
+        
+            <input onclick="changeScene(event)" type="radio" id="radio4" name="radios" value="4">
+            <label for="radio4">Compatibility → Usefulness</label>
+        
+            <input onclick="changeScene(event)" type="radio" id="radio5" name="radios" value="5">
+            <label for="radio5">Buy-in → App</label>
+        
+            <input onclick="changeScene(event)" type="radio" id="radio6" name="radios" value="6">
+            <label for="radio6">Firm Size → App</label>
+        
+            <input onclick="changeScene(event)" type="radio" id="radio7" name="radios" value="7">
+            <label for="radio7">Competition → App</label>
+        
+            <input onclick="changeScene(event)" type="radio" id="radio8" name="radios" value="8">
+            <label for="radio8">Info Intensity → App</label>
+        </form>
+    </div>
+
+
+    <!-- Page content -->
+    <div class="cntr">
+    </div>
+
+<script>
+
+    // store data at window level for quick re-access
+    var treeDataBase,
+        crosstabDataBase;
+
+    async function init(){
+        treeDataBase = await d3.json("https://oleksf.github.io/B2B-App-Decision/graph.json");
+        crosstabDataBase = await d3.csv("https://raw.githubusercontent.com/oleksf/B2B-App-Decision/main/crosstab_counts.csv");
+        treeScene();
+    }       
+
+    var scene = 0,       // scene number
+        i = 0,
+        root,
+        nodes;
+    
+    var svgcanvas = d3.select("#svg-canvas");
+
+    // name to scene number mapping
+    sceneDict = {
+        "Perceived Usefulness": 1,
+        "Perceived Ease of Use": 2,
+        "Technology": null,
+        "Relative Advantage": 3,
+        "Compatibility": 4,
+        "Organization": null,
+        "Top Management Support": 5,
+        "Firm Size": 6,
+        "Environment": null,
+        "Competitive Pressure": 7,
+        "Information Intensity": 8
+    }
+    sceneDictR = {
+        1: "Perceived Usefulness",
+        2: "Perceived Ease of Use",
+        3: "Relative Advantage",
+        4: "Compatibility",
+        5: "Top Management Support",
+        6: "Firm Size",
+        7: "Competitive Pressure",
+        8: "Information Intensity"
+    };
+
+    // d3 hierarchy manipulation utils
+    //  find node by name attribute
+    function findNode(searchName){
+        // set up unfolded hierarchy; inefficient, but fast enough
+        var treemap = d3.tree();
+        var root = d3.hierarchy(treeDataBase);
+        var treeData = treemap(root);
+        var nodes = treeData.descendants();
+        // scan nodes
+        for (n of nodes){
+            if (n.data.name === searchName){
+                return n;
+            }
+        }
+    }
+    //  find next parent which has measures attribute
+    function findResponse(current){
+                var p = current.parent;
+                var parentMeasures = p.data.measures
+                if (parentMeasures) {
+                    return p;
+                } else {
+                    return findResponse(p);
+                }
+            }
+
+    
+    function changeScene(event){
+        d3.select("body .cntr").node().innerHTML = "";
+        scene = event.target.value;
+        if (scene === "0"){
+            treeScene();
+        } else {
+            var sceneName = sceneDictR[scene];
+            var predictorNode = findNode(sceneName);
+            var responseNode = findResponse(predictorNode);
+            crosstabScene(predictorNode, responseNode);
+        }
+    }
+    
+    
+
+    function treeScene() {
+        // https://bl.ocks.org/d3noob/4ce5ace87a0b99d8c910235615d3bb5b
+        
+        
+
+        var context = d3.select("body").select("div.cntr").append("div")
+            .attr("width", "100%")
+            .attr("height", "20%")
+            .attr("id", "context");
+
+        context.append("p")
+            .text("In this digital age, even B2B vendors can potentially gain from adopting apps. These apps can serve as means of outreach to clients and prospects, simplifying the buying process and provding a convenient way to communicate. However, apps can also be difficult to build due to issues ranging from effectiveness to buy-in.");
+        context.append("p")
+            .text("A recent study explored the B2B app dev decision in depth by surveying 360 marketing executives. Leveraging academic technology adoption frameworks, the survey asked questions related to conepts that lead to app adoption.");
+        
+        // new paragraph with inline svg's
+        var contextP = context.append("div");
+        //      start text
+        contextP.append("p")
+            .attr("class", "inline-p")
+            .text('Hover over a concept (');
+        //      add circle
+        contextP.append("svg")
+            .attr("class", "node-in")
+            .append("svg")
+                .attr("y", "50%")
+                .attr("overflow", "visible")
+                .append("g")
+                    .attr("class", "node-in")
+                    .attr("transform", "translate(10,0)")
+                    .append("circle")
+                        .attr("class", "node-in")
+                        .attr("r", "8")
+                        .attr("style", "fill: lightsteelblue; stroke-width: 2px");
+        //      add comma
+        contextP.append("p")
+            .attr("class", "inline-p")
+            .text(',');
+        //      add circle
+        contextP.append("svg")
+            .attr("class", "node-in")
+            .append("svg")
+                .attr("y", "50%")
+                .attr("overflow", "visible")
+                .append("g")
+                    .attr("class", "node-in")
+                    .attr("transform", "translate(10,0)")
+                    .append("circle")
+                        .attr("class", "node-in")
+                        .attr("r", "8")
+                        .attr("style", "fill: #fff; stroke-width: 2px");
+        //      continue text
+        contextP.append("p")
+            .attr("class", "inline-p")
+            .text(') to see the related questions in the survey. Click a concept to expand on it.');
+
+        // new paragraph with inline svg's
+        var contextP = context.append("div");
+        //      text start
+        contextP.append("p")
+            .attr("class", "inline-p")
+            .text("Click links ");
+        //      add inline example of link (two linked circles)
+        var linkSvg = contextP.append("svg")
+            .attr("class", "link-in")
+            .append("svg")
+                .attr("y", "50%")
+                .attr("overflow", "visible");
+        //          link between circles
+        linkSvg.append("g")
+            .attr("class", "link-in")
+            .append("path")
+                .attr("class", "link-in")
+                .attr("d", "M 10 0 L 40 0");
+        //          left circle
+        linkSvg.append("g")
+            .attr("class", "node-in")
+            .attr("transform", "translate(10,0)")
+            .append("circle")
+                .attr("class", "node-in")
+                .attr("r", "8")
+                .attr("style", "fill: #fff; stroke-width: 2px");
+        //          right circle
+        linkSvg.append("g")
+            .attr("class", "node-in")
+            .attr("transform", "translate(40,0)")
+            .append("circle")
+                .attr("class", "node-in")
+                .attr("r", "8")
+                .attr("style", "fill: lightsteelblue; stroke-width: 2px");
+        //      text continued
+        contextP.append("p")
+            .attr("class", "inline-p")
+            .text(" to drill-down into hypothesized relationships, or use the navigation menu on the left.");
+        
+        // add div for graph area
+        var context = d3.select("body").select("div.cntr").append("div")
+            .attr("height", "40%")
+            .attr("class", "graph");
+        var svgcanvas = context.append("svg")
+            .attr("id", "svg-canvas")
+            .attr("width", "100%")
+            .attr("height", "500");
+
+        var margin = {top: 45, right: 10, bottom: 20, left: 100},
+            svgpos = document.getElementById("svg-canvas").getBoundingClientRect(),
+            duration = 750,  // tree expansion duration
+            w = svgpos.width,
+            h = svgpos.height,
+            nodeRadius = 9,
+            labelOffset = nodeRadius + 4,
+            nodeDepth = (w - margin.left - margin.right) / 4,
+            width = (nodeDepth * 4 + nodeRadius / 2) - margin.left -    margin.right,
+            height = 300 - margin.top - margin.bottom,
+            linebreakEm = 1.2;
+
+        var svg = svgcanvas.append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        // Compute the layout.
+        var treemap = d3.tree().size([height, width]);
+
+        root = d3.hierarchy(treeDataBase);
+        root.x0 = height / 2;
+        root.y0 = 0;
+
+        // Collapse to root
+        collapse(root);
+
+        update(root);
+
+        // Collapse the node and all its children
+        function collapse(d) {
+            if(d.children) {
+                d._children = d.children
+                d._children.forEach(collapse)
+                d.children = null
+            }
+        }
+
+        
+
+        function update(source) {
+
+            treeData = treemap(root);
+
+            nodes = treeData.descendants();
+            var links = treeData.descendants().slice(1);
+
+            // Normalize for fixed-depth.
+            nodes.forEach(function(d){ d.y = d.depth * nodeDepth});
+
+            // ****************** Nodes section ***************************
+
+            // Update the nodes...
+            var node = svg.selectAll('g.node')
+                .data(nodes, function(d) {return d.id || (d.id = ++i); });
+
+            // Enter any new modes at the parent's previous position.
+            var nodeEnter = node.enter().append('g')
+                .attr('class', 'node')
+                .attr("transform", function(d) {
+                    return "translate(" + source.y0 + "," + source.x0 + ")";
+                })
+                .on("click", nodeClick)
+                .on("mouseout", nodeMouseOut)
+                .on("mouseover", nodeMouseOver)
+                ;
+            
+            // Add Circle for the nodes
+            nodeEnter.append('circle')
+                .attr('class', 'node')
+                .attr('r', 1e-6)
+                .style("fill", function(d) {
+                    return d._children ? "lightsteelblue" : "#fff";
+                });
+            
+            // Add labels for the nodes
+            nodeEnter.append('text')
+                .attr("dy", ".35em")
+                .attr("x", function(d) {
+                    return d.children || d._children ? -labelOffset : labelOffset;
+                })
+                .attr("y", function(d) {
+                    return d.children || d._children ? -labelOffset : 0;
+                })
+                .attr("text-anchor", function(d) {
+                    return d.children || d._children ? "end" : "start";
+                })
+                .text(function(d) { return d.data.name; });
+
+            // UPDATE
+            var nodeUpdate = nodeEnter.merge(node);
+            
+                        // Transition to the proper position for the node
+            nodeUpdate.transition()
+                .duration(duration)
+                .on("start", nodeMouseOut)
+                .attr("transform", function(d) { 
+                    return "translate(" + d.y + "," + d.x + ")";
+                })
+                .on("start", function() {
+                    nodeMouseOut();
+                    nodeUpdate.on("mouseover", null).on("mouseout", null);
+                })
+                .on("end", function () {
+                    nodeUpdate.on("mouseover", nodeMouseOver).on("mouseout", nodeMouseOut);
+                })
+                ;
+            
+            // Update the node attributes and style
+            nodeUpdate.select('circle.node')
+                .attr('r', nodeRadius)
+                .style("fill", function(d) {
+                    return d._children ? "lightsteelblue" : "#fff";
+                })
+                .attr('cursor', 'pointer');
+            
+            
+            // Remove any exiting nodes
+            var nodeExit = node.exit().transition()
+                .duration(duration)
+                .attr("transform", function(d) {
+                    return "translate(" + source.y + "," + source.x + ")";
+                })
+                .remove();
+            
+            // On exit reduce the node circles size to 0
+            nodeExit.select('circle')
+                .attr('r', 1e-6);
+            
+            // On exit reduce the opacity of text labels
+            nodeExit.select('text')
+                .style('fill-opacity', 1e-6);
+
+            // ****************** links section ***************************
+
+            // Update the links...
+            var link = svg.selectAll('.link')
+                .data(links, function(d) { return d.id; });
+            var linkArea = svg.selectAll('path.link-area')
+                .data(links, function(d) { return d.id; });
+            
+
+            svg.append("svg:defs").selectAll("marker")
+                .data(["end"])      // Different link/path types can be defined here
+              .enter().append("svg:marker")    // This section adds in the arrows
+                .attr("id", String)
+                .attr("viewBox", "-4 -5 10 10")
+                .attr("refX", 15)
+                .attr("refY", -1.5)
+                .attr("markerWidth", 3)
+                .attr("markerHeight", 3)
+                .attr("orient", "auto")
+              .append("svg:path")
+                .attr("d", "M-2,-5L10,0L-2,5")
+                .attr("fill", "none")
+                .attr("stroke", "slategray")
+                .attr("stroke-width", "2px");
+
+            // Enter any new links at the parent's previous position.
+            function genLink(d){
+                var o = {x: source.x0, y: source.y0}
+                return diagonal(o, o)
+            }
+            var linkSel = link.enter().insert("g", "g");
+            var linkEnter = linkSel
+                .append("path")
+                    .attr("class", "link")
+                    .attr('d', genLink)
+                    .attr("marker-end", "url(#end)")
+                ;
+            
+            // Add click-area to above links as invisible links.
+            var linkAreaEnter = linkSel.append("path")
+                .attr("class", "link-area")
+                .attr('d', genLink)
+                .on("click", linkClick)
+                .on("mouseover", linkMouseOver)
+                .on("mouseout", linkMouseOut);
+
+            // UPDATE
+            var linkUpdate = linkEnter.merge(link);
+            var linkAreaUpdate = linkAreaEnter.merge(linkArea);
+            
+            // Transition back to the parent element position
+            linkUpdate.transition()
+                .duration(duration)
+                .attr('d', function(d){ return diagonal(d, d.parent) });
+            linkAreaUpdate.transition()
+                .duration(duration)
+                .attr('d', function(d){ return diagonal(d, d.parent) });
+            
+            // Remove any exiting links
+            var linkExit = link.exit().transition()
+                .duration(duration)
+                .attr('d', function(d) {
+                    var o = {x: source.x, y: source.y}
+                    return diagonal(o, o)
+                })
+                .remove();
+            var linkAreaExit = linkArea.exit().transition()
+                .duration(duration)
+                .attr('d', function(d) {
+                    var o = {x: source.x, y: source.y}
+                    return diagonal(o, o)
+                })
+                .remove();
+            
+            // Store the old positions for transition.
+            nodes.forEach(function(d){
+                d.x0 = d.x;
+                d.y0 = d.y;
+            });
+        
+            // Creates a curved (diagonal) path from parent to the child nodes
+            function diagonal(s, d) {
+            
+                path = `M ${s.y} ${s.x}
+                        C ${(s.y + d.y) / 2} ${s.x},
+                        ${(s.y + d.y) / 2} ${d.x},
+                        ${d.y} ${d.x}`
+            
+                return path
+            }
+        
+            // Toggle children on node click.
+            function nodeClick(d) {
+                if (d.children) {
+                    d._children = d.children;
+                    d.children = null;
+                } else {
+                    d.children = d._children;
+                    d._children = null;
+                }
+                update(d);
+            }
+
+            // Display survey questions below tree on node mouseover
+            function nodeMouseOver(d) {
+                svgcanvas.append("g")
+                    .attr("class", "questions")
+                    .attr("transform", "translate(0," + (margin.top + height) + ")");
+                var qbox = d3.select("g.questions");
+                if (d.data.measures) {
+                    var qheader = qbox.append("g");
+                    qheader.append("text")
+                        .text(d.data.name + " questions:")
+                        .attr("class", "emphasized-text");
+                    qheader.append("text")
+                        .text("(7 point Likert scale)")
+                        .attr("dy", linebreakEm + "em");
+                    qbox.append("g").selectAll("text")
+                        .data(d.data.measures).enter().append("text")
+                        .text(function (d) { return "- " + d.question; })
+                        .attr("x", 0)
+                        .attr("y", 0)
+                        .attr("dy", function (d, i) { return (i + 2) * linebreakEm + "em"; });
+                } else {
+                    var noDataCaption = qbox.append("text")
+                        .attr("x", 0)
+                        .attr("y", 0)
+                        .attr("dy", linebreakEm + "em");
+                    if (d._children) {
+                        noDataCaption.text(d.data.name + " was measured only through its components. Click the circle to see these.")
+                    } else {
+                        noDataCaption.text(d.data.name + " was measured only through its components.")
+                    }
+                }
+            }
+            function nodeMouseOut() {
+                d3.select("g.questions").remove();
+            }
+            
+            
+
+            // Shade links (hypotheses)
+            function linkMouseOver(d) {
+                var n = sceneDict[d.data.name];
+                if (n) {
+                    d3.select(this.closest("g").querySelector(".link"))
+                        .attr("class", "selected-link");
+                    d3.select("#radio" + n).attr("class", "highlighted");
+                }
+            }
+            function linkMouseOut(d) {
+                d3.select(this.closest("g").querySelector(".selected-link"))
+                    .attr("class", "link");
+                var n = sceneDict[d.data.name];
+                if (n) {
+                    d3.select("#radio" + n).attr("class", null);
+                }
+            }
+            
+            // Toggle hypothesis scene on link click
+            function linkClick(d) {
+                var n = sceneDict[d.data.name];
+                if (n) {
+                    window.scene = n;
+                    document.getElementById("radio" + scene).click();
+                }
+                
+            }
+        };
+
+    }
+
+    function crosstabScene(predictorNode, responseNode){
+
+        var context = d3.select("body").select("div.cntr").append("div")
+            .attr("width", "100%")
+            .attr("height", "20%")
+            .attr("id", "context")
+            .attr("style", "margin: 3em 0 0 3em;");
+
+        function effectText(){
+            if (scene === "4" || scene === "6"){
+                return " has no statistical effect on ";
+            } else {
+                return " statistically increases ";
+            }
+        }
+        
+        // new paragraph with inline svg's
+        var contextP = context.append("div");
+        //      start text
+        contextP.append("p")
+            .text('Hypothesis: ' + predictorNode.data.name + " increases " + responseNode.data.name);
+
+        contextP.append("p")
+            .text('Finding: ' + predictorNode.data.name + effectText() + responseNode.data.name);
+        
+        context.append("div").append("p")
+            .text("Select a " + predictorNode.data.name + " survey question to see Likert scale (1-7) response counts against " + responseNode.data.name + " questions:")
+
+        context.append("select").attr("id", "qselector")
+            .selectAll("option")
+            .data(predictorNode.data.measures).enter()
+            .append("option")
+            .text(function (d) { return d.question; })
+            .attr("value", function (d, i) { return i; });
+
+        context.append("p")
+            .attr("class", "inline-p")
+            .text("  (question becomes horizontal axis)");
+
+        var width = 250,
+            height = 250,
+            margin = {top: 5, right: 0, bottom: 0, left: 50};
+
+        // add div for graph area
+        var context = d3.select("body").select("div.cntr").append("div")
+            .attr("height", "40%")
+            .attr("class", "graph");
+        var svgblock = context.append("div");
+
+        var likertN = ["1", "2", "3", "4", "5", "6", "7"];
+
+        var labelDiv = svgblock.append("div")
+            .style("display", "flex")
+            .style("flex-wrap", "wrap")
+            .style("padding-left", "50px")
+            .style("padding-top", "40px");
+        labelDiv.append("div")
+            .style("display", "flex")
+            .style("width", "40%")
+            .text("↓ " + responseNode.data.measures[0].question);
+        labelDiv.append("div")
+            .style("display", "flex")
+            .style("width", "40%")
+            .style("flex-wrap", "wrap")
+            .style("margin-left", "20px")
+            .text("↓ " + responseNode.data.measures[1].question);
+
+        // plots 1 (top left, response index 0)
+        var svgTopRow = svgblock.append("svg")
+              .attr("width", 2 * (width + margin.left + margin.right))
+              .attr("height", height + margin.top + margin.bottom)
+              .attr("id", "svgBotRow");
+        var svg = svgTopRow.append("svg");
+        var svg1 = svg.append("g")
+              .attr("transform",
+                    "translate(" + margin.left + "," + margin.top + ")");
+        //      axes
+        var x = d3.scaleBand()
+          .range([ 0, width ])
+          .domain(likertN)
+          .padding(0.01);
+        svg1.append("g")
+          .attr("transform", "translate(0," + (height - margin.top - margin.bottom) + ")")
+          .call(d3.axisBottom(x))
+        var y = d3.scaleBand()
+          .range([ height, margin.left ])
+          .domain(likertN)
+          .padding(0.01);
+        svg1.append("g")
+        .attr("transform", "translate(0," + (- margin.top - margin.bottom) + ")")
+          .call(d3.axisLeft(y));        
+
+        // plot 2 (top right, response index 1)
+        var svg = svgTopRow.append("svg");
+        var svg2 = svg.append("g")
+              .attr("transform",
+                    "translate(" + (margin.left + width + margin.left + margin.right) + "," + margin.top + ")");
+        //      axes
+        var x = d3.scaleBand()
+            .range([ 0, width ])
+            .domain(likertN)
+            .padding(0.01);
+        svg2.append("g")
+            .attr("transform", "translate(0," + (height - margin.top - margin.bottom) + ")")
+            .call(d3.axisBottom(x))
+        var y = d3.scaleBand()
+            .range([ height, margin.left ])
+            .domain(likertN)
+            .padding(0.01);
+        svg2.append("g")
+            .attr("transform", "translate(0," + (- margin.top - margin.bottom) + ")")
+            .call(d3.axisLeft(y));
+
+        var labelDiv = svgblock.append("div")
+            .style("display", "flex")
+            .style("flex-wrap", "wrap")
+            .style("padding-left", "50px")
+            .style("padding-top", "20px");
+        labelDiv.append("div")
+            .style("display", "flex")
+            .style("width", "40%")
+            .text("↓ " + responseNode.data.measures[2].question);
+        labelDiv.append("div")
+            .style("display", "flex")
+            .style("width", "40%")
+            .style("flex-wrap", "wrap")
+            .style("margin-left", "20px")
+            .text("↓ " + responseNode.data.measures[3].question);
+
+        // plots 3 (bottom left, response index 2)
+        var svgBotRow = svgblock.append("svg")
+              .attr("width", 2 * (width + margin.left + margin.right))
+              .attr("height", (height + margin.top + margin.bottom))
+              .attr("id", "svgBotRow");
+        var svg = svgBotRow.append("svg");
+        var svg3 = svg.append("g")
+              .attr("transform",
+                    "translate(" + margin.left + "," + margin.top + ")");
+        //      axes
+        var x = d3.scaleBand()
+          .range([ 0, width ])
+          .domain(likertN)
+          .padding(0.01);
+        svg3.append("g")
+          .attr("transform", "translate(0," + (height - margin.top - margin.bottom) + ")")
+          .call(d3.axisBottom(x))
+        var y = d3.scaleBand()
+          .range([ height, margin.left ])
+          .domain(likertN)
+          .padding(0.01);
+        svg3.append("g")
+        .attr("transform", "translate(0," + (- margin.top - margin.bottom) + ")")
+          .call(d3.axisLeft(y));
+
+        // plot 4 (bottom right, response index 3)
+        var svg = svgBotRow.append("svg");
+        var svg4 = svg.append("g")
+              .attr("transform",
+                    "translate(" + (margin.left + width + margin.left + margin.right) + "," + margin.top + ")");
+        //      axes
+        var x = d3.scaleBand()
+          .range([ 0, width ])
+          .domain(likertN)
+          .padding(0.01);
+        svg4.append("g")
+          .attr("transform", "translate(0," + (height - margin.top - margin.bottom) + ")")
+          .call(d3.axisBottom(x))
+        
+        var y = d3.scaleBand()
+          .range([ height, margin.left ])
+          .domain(likertN)
+          .padding(0.01);
+        svg4.append("g")
+        .attr("transform", "translate(0," + (- margin.top - margin.bottom) + ")")
+          .call(d3.axisLeft(y));
+
+        // update points based on selector
+        function update(index, needsWipe){
+            if (needsWipe){
+                d3.selectAll("g .crosstab-points").remove();
+            }
+            // draw plot1
+            svg1.append("g")
+                .attr("class", "crosstab-points")
+                .attr("transform", "translate(0," + (- margin.top - margin.bottom) + ")")
+                .selectAll().data(crosstabDataBase)
+                .enter()
+                .filter(function(d) { 
+                    if ((d.RESPONSE === responseNode.data.measures[0].var) && (d.PREDICTOR === predictorNode.data.measures[index].var)) {
+                        return d;
+                    }
+                })
+                .append("circle")
+                .style("fill", "steelblue")
+                .attr("r", function(d) { 
+                    return Math.log(d.N + 1) / Math.log(4) * 3;
+                })
+                .attr("cx", function(d) { return x(d.PREDICTORVAL) + 18; })
+                .attr("cy", function(d) { return y(d.RESPONSEVAL) + 15.5; });
+
+            // draw plot2
+            svg2.append("g")
+                .attr("class", "crosstab-points")
+                .attr("transform", "translate(0," + (- margin.top - margin.bottom) + ")")
+                .selectAll().data(crosstabDataBase)
+                .enter()
+                .filter(function(d) { 
+                    if ((d.RESPONSE === responseNode.data.measures[1].var) && (d.PREDICTOR === predictorNode.data.measures[index].var)) {
+                        return d;
+                    }
+                })
+                .append("circle")
+                .style("fill", "steelblue")
+                .attr("r", function(d) { 
+                    return Math.log(d.N + 1) / Math.log(4) * 3;
+                })
+                .attr("cx", function(d) { return x(d.PREDICTORVAL) + 19.5; })
+                .attr("cy", function(d) { return y(d.RESPONSEVAL) + 15.5; });
+            // draw plot3
+            svg3.append("g")
+                .attr("class", "crosstab-points")
+                .attr("transform", "translate(0," + (- margin.top - margin.bottom) + ")")
+                .selectAll().data(crosstabDataBase)
+                .enter()
+                .filter(function(d) { 
+                    if ((d.RESPONSE === responseNode.data.measures[2].var) && (d.PREDICTOR === predictorNode.data.measures[index].var)) {
+                        return d;
+                    }
+                })
+                .append("circle")
+                .style("fill", "steelblue")
+                .attr("r", function(d) { 
+                    return Math.log(d.N) / Math.log(1.5) * 1.5;
+                })
+                .attr("cx", function(d) { return x(d.PREDICTORVAL) + 18; })
+                .attr("cy", function(d) { return y(d.RESPONSEVAL) + 15.5; });
+            // draw plot4
+            svg4.append("g")
+                .attr("class", "crosstab-points")
+                .attr("transform", "translate(0," + (- margin.top - margin.bottom) + ")")
+                .selectAll().data(crosstabDataBase)
+                .enter()
+                .filter(function(d) { 
+                    if ((d.RESPONSE === responseNode.data.measures[3].var) && (d.PREDICTOR === predictorNode.data.measures[index].var)) {
+                        return d;
+                    }
+                })
+                .append("circle")
+                .style("fill", "steelblue")
+                .attr("r", function(d) { 
+                    return Math.log(d.N + 1) / Math.log(4) * 3;
+                })
+                .attr("cx", function(d) { return x(d.PREDICTORVAL) + 19.5; })
+                .attr("cy", function(d) { return y(d.RESPONSEVAL) + 15.5; });
+
+            window.isFirst = 0; // update that scene now has data plotted
+        }
+
+        update(0, false);
+        d3.select("#qselector").on("change", function(event, d) {
+            update(d3.select(this).property("value"), true);
+        });
+
+        
+    }
+</script>
+
+</body>
+</html>

@@ -1,6 +1,10 @@
 # B2B-App-Decision
 
-The minmalist interactive site with the viz is (here)[https://oleksf.github.io/B2B-App-Decision/]. The point is to demo how hierarchies can be folded out as interactive web elements, with links mapped to corresponding drill-down featuring some segment-specific analysis. Based on a study of B2B app development decision motivators (referenced below).
+A minimalist interactive (site)[https://oleksf.github.io/B2B-App-Decision/] to be a proof of concept for how data hierarchies can be folded out as interactive web elements. Hierarchy links mapped to corresponding drill-down analysis (charts + text).
+
+Not intended as a full data viz demo--pretty high cognitive load as it's currently built.
+
+Based on a study of B2B app development intent among execs (referenced below).
 
 ---
 

@@ -1,10 +1,10 @@
 # B2B-App-Decision
 
-A minimalist interactive [site](https://oleksf.github.io/B2B-App-Decision/) to be a proof of concept for how data hierarchies can be folded out as interactive web elements. Hierarchy links mapped to corresponding drill-down analysis (charts + text).
+A minimalist interactive [web page](https://oleksf.github.io/B2B-App-Decision/) serving as a proof of concept for data hierarchies being folded out as interactive web elements in e.g. a custom dashboard. Hierarchy links mapped to corresponding drill-down analysis with charts + text, with options to change variables with a dropdown. Built as a single interactive page, so no notable load times on interaction; all interactive functionality is in `index.html` in the script tag (some day might refactor this), running on D3.js. The data is loaded in from an external source (in this case, the csv file).
 
 Not intended as a full data viz demo--pretty high cognitive load as it's currently built.
 
-Based on a study of B2B app development intent among execs (referenced below).
+Demo data based on a study of B2B app development intent among execs (referenced below).
 
 ---
 
